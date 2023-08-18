@@ -1,5 +1,5 @@
 This project is intended to create AWS infrastructure using Terraform (IaC) as part of the IU University Cloud Programming course.
-
+![Alt text](static_contents/images/aws.png)
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)

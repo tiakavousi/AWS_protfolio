@@ -43,3 +43,7 @@ module "asg" {
   security_group          = module.sec_group.security_group_id
 }
 
+# S3 Bucket
+module "s3" {
+  source  = "./modules/storage/s3"
+}

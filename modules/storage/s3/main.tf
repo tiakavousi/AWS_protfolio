@@ -49,3 +49,21 @@ resource "aws_s3_bucket_object" "bucket_error_html" {
   source = "${path.module}/../../../static_contents/error.html"
   etag   = filemd5("${path.module}/../../../static_contents/error.html")
 }
+
+# Adding a bucket policy to make the bucket and its objects public
+resource "aws_s3_bucket_policy" "public_bucket_policy" {
+  bucket = aws_s3_bucket.static_content_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid       = "PublicReadGetObject",
+        Effect    = "Allow",
+        Principal = "*",
+        Action    = ["s3:GetObject"],
+        Resource  = "${aws_s3_bucket.static_content_bucket.arn}/*",
+      },
+    ],
+  })
+}
