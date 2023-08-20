@@ -1,29 +1,20 @@
-resource "random_pet" "bucket_name" {
-  length = 2
+resource "random_pet" "bucket_name" { # generates random pet names that are intended to be used as unique identifiers for other resources.
+  length = 3
 }
 
 resource "aws_s3_bucket" "static_content_bucket" {
-  bucket = "static-content-${random_pet.bucket_name.id}"
+  bucket = "static-content-${random_pet.bucket_name.id}" // the bucket name must be unique therefore adding random-pet
+  
+  tags = {
+    Name        = "My bucket"
+  }
 }
 
 resource "aws_s3_bucket_website_configuration" "static_content" {
   bucket = aws_s3_bucket.static_content_bucket.id
 
   index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "error.html"
-  }
-
-  routing_rule {
-    condition {
-      key_prefix_equals = "docs/"
-    }
-    redirect {
-      replace_key_prefix_with = "documents/"
-    }
+    suffix = "picture_bucket"
   }
 }
 
@@ -34,36 +25,19 @@ resource "aws_s3_bucket_ownership_controls" "static_content" {
   }
 }
 
-# Uploading "index.html"
-resource "aws_s3_bucket_object" "bucket_index_html" {
+# Uploading Images
+resource "aws_s3_bucket_object" "picture_bucket" {
   bucket = aws_s3_bucket.static_content_bucket.bucket
-  key    = "index.html"
-  source = "${path.module}/../../../static_contents/index.html"
-  etag   = filemd5("${path.module}/../../../static_contents/index.html")
+  key    = "geek.jpeg"
+  source = "${path.module}/static_contents/geek.jpeg"
+  etag   = filemd5("${path.module}/static_contents/geek.jpeg")
+  acl    = "public-read"
 }
-
-# Uploading "error.html"
-resource "aws_s3_bucket_object" "bucket_error_html" {
-  bucket = aws_s3_bucket.static_content_bucket.bucket
-  key    = "error.html"
-  source = "${path.module}/../../../static_contents/error.html"
-  etag   = filemd5("${path.module}/../../../static_contents/error.html")
-}
-
-# Adding a bucket policy to make the bucket and its objects public
-resource "aws_s3_bucket_policy" "public_bucket_policy" {
+resource "aws_s3_bucket_public_access_block" "access_block" {
   bucket = aws_s3_bucket.static_content_bucket.id
 
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Sid       = "PublicReadGetObject",
-        Effect    = "Allow",
-        Principal = "*",
-        Action    = ["s3:GetObject"],
-        Resource  = "${aws_s3_bucket.static_content_bucket.arn}/*",
-      },
-    ],
-  })
+  block_public_acls   = false
+  block_public_policy = false
+  ignore_public_acls  = false
+  restrict_public_buckets = false
 }

@@ -37,5 +37,5 @@ variable "ami_id" {
 }
 
 
- 
+
 

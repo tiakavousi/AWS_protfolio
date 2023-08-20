@@ -15,3 +15,7 @@ variable "subnet_group_private_ids" {
 variable "security_group" {
   type        = string
 }
+
+variable "cloudfront_dns" {
+  type  = string
+}

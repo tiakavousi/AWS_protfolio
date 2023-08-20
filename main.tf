@@ -6,8 +6,8 @@ module "vpc" {
 
 # Subnets
 module "subnets" {
-  source           = "./modules/network/subnets"
-  vpc_id           = module.vpc.vpc_id
+  source = "./modules/network/subnets"
+  vpc_id = module.vpc.vpc_id
 }
 
 # Configure Routes
@@ -27,23 +27,35 @@ module "sec_group" {
 
 # Load Balancer
 module "lb" {
-  source                   = "./modules/network/lb"
-  vpc_security_group_name  = ["sg-1", "sg-2"]
-  vpc_id                   = module.vpc.vpc_id
-  subnet_group_public_ids  = module.subnets.subnet_group_public_ids
-  security_group_id        = module.sec_group.security_group_id
+  source                  = "./modules/network/lb"
+  vpc_security_group_name = ["sg-1", "sg-2"]
+  vpc_id                  = module.vpc.vpc_id
+  subnet_group_public_ids = module.subnets.subnet_group_public_ids
+  security_group_id       = module.sec_group.security_group_id
 }
 
 # Auto Scalling Group
 module "asg" {
-  source                  = "./modules/compute/asg"
-  ami_id                  = var.ami_id
-  target_group_arn        = module.lb.target_group_arn
+  source                   = "./modules/compute/asg"
+  ami_id                   = var.ami_id
+  target_group_arn         = module.lb.target_group_arn
   subnet_group_private_ids = module.subnets.subnet_group_private_ids
-  security_group          = module.sec_group.security_group_id
+  security_group           = module.sec_group.security_group_id
+  cloudfront_dns           = module.cf.cloudfront_distribution_dns
 }
 
 # S3 Bucket
 module "s3" {
-  source  = "./modules/storage/s3"
+  source = "./modules/storage/s3"
+}
+
+# CloudFront Distribution
+module "cf" {
+  source      = "./modules/network/cloudfront"
+  domain_name = module.s3.bucket_regional_domain_name
+}
+
+# DNS
+module "dns" {
+  source = "./modules/network/dns"
 }

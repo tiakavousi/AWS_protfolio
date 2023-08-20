@@ -15,10 +15,9 @@ resource "aws_launch_configuration" "asg_config" {
     associate_public_ip_address = false
     
     # installing nginx on the EC2 instances
-    user_data = <<-EOF
-                #!/bin/bash
-                apt-get update -y && apt-get install -y nginx
-                EOF
+    user_data = templatefile("${path.module}/userdata.tpl", {
+    cloudfront_dns = var.cloudfront_dns
+    })
     
     lifecycle {
       create_before_destroy = true
