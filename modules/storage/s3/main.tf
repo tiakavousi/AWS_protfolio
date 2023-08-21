@@ -1,13 +1,10 @@
-resource "random_pet" "bucket_name" { # generates random pet names that are intended to be used as unique identifiers for other resources.
-  length = 3
+# generates random pet names that are intended to be used as unique identifiers for other resources
+resource "random_pet" "bucket_name" {
+  length = 2
 }
 
-resource "aws_s3_bucket" "static_content_bucket" {
-  bucket = "static-content-${random_pet.bucket_name.id}" // the bucket name must be unique therefore adding random-pet
-  
-  tags = {
-    Name        = "My bucket"
-  }
+resource "aws_s3_bucket" "static_content_bucket" {       # the bucket name must be unique therefore adding random-pet
+  bucket = "static-content-${random_pet.bucket_name.id}" 
 }
 
 resource "aws_s3_bucket_website_configuration" "static_content" {
@@ -33,6 +30,8 @@ resource "aws_s3_bucket_object" "picture_bucket" {
   etag   = filemd5("${path.module}/static_contents/geek.jpeg")
   acl    = "public-read"
 }
+
+# giving permisions to make the bucket public 
 resource "aws_s3_bucket_public_access_block" "access_block" {
   bucket = aws_s3_bucket.static_content_bucket.id
 
