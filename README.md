@@ -1,5 +1,5 @@
 This project is intended to create AWS infrastructure using Terraform (IaC) as part of the IU University Cloud Programming course.
-![Alt text](static_contents/images/aws.png)
+![Alt text](/modules/storage/s3/static_contents/awsCloud.png)
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
@@ -21,7 +21,7 @@ This project is intended to create AWS infrastructure using Terraform (IaC) as p
 ## Configuration:
 
 ```
-export TF_VAR_aws_region="us-east-1"
+export TF_VAR_aws_region="<YOUR-PREFFERED-AWS-REGION>"
 export AWS_SECRET_ACCESS_KEY="<YOUR-AWS-SECRET-KEY>"
 export AWS_ACCESS_KEY_ID="<YOUR-AWS-ACCESS-KEY-ID>"
 ```
